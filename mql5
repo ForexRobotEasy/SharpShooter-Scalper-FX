@@ -1,0 +1,41 @@
+
+// SharpShooter Scalper FX Expert Advisor
+// Developed by Forex Robot Easy Team
+// Developer's site: forexroboteasy.com
+
+// Global variables
+int ticket = 0; // Order ticket number
+double stopLoss = 0; // Stop Loss level
+double takeProfit = 0; // Take Profit level
+
+// Function to open a buy order
+void openBuyOrder(double price) {
+   ticket = OrderSend(Symbol(), OP_BUY, 0.1, price, 0, stopLoss, takeProfit, 'Buy Order', 0, 0, Green);
+}
+
+// Function to open a sell order
+void openSellOrder(double price) {
+   ticket = OrderSend(Symbol(), OP_SELL, 0.1, price, 0, stopLoss, takeProfit, 'Sell Order', 0, 0, Red);
+}
+
+// Function to calculate stop loss and take profit based on the dynamic ratio
+void calculateLevels() {
+   double dynamicRatio = AccountBalance() / AccountEquity(); // Calculate the dynamic ratio
+   stopLoss = NormalizeDouble(dynamicRatio * 10, Digits); // Set the stop loss level
+   takeProfit = NormalizeDouble(dynamicRatio * 20, Digits); // Set the take profit level
+}
+
+// Start function
+void OnTick() {
+   // Check if there are no open orders
+   if (OrdersTotal() == 0) {
+      // Check if the current symbol is USD/CAD
+      if (Symbol() == 'USD/CAD') {
+         calculateLevels(); // Calculate stop loss and take profit levels
+         openBuyOrder(Bid); // Open a buy order at the current bid price
+         openSellOrder(Ask); // Open a sell order at the current ask price
+      }
+   }
+}
+
+// End of code
